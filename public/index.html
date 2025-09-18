@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 LinkNest — Your Links, Nestled Perfectly</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #333;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            color: #7f8c8d;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 18px;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://via.placeholder.com/80/4facfe/ffffff?text=LN" alt="LinkNest Logo" class="logo">
+        <h1>✨ LinkNest</h1>
+        <p class="tagline">Your Links, Nestled Perfectly</p>
+        <p>Organize, shorten & share your links — all in one cozy nest!</p>
+        
+        <input type="url" id="longUrl" placeholder="Paste your long URL here (e.g., https://youtube.com)" required />
+        <button onclick="shortenUrl()">CREATE NEST LINK</button>
+
+        <div id="result" style="display:none;">
+            <div id="result-content"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 LinkNest — A Smart Link Management Tool Build By Pk | 
+        <a href="/privacy" style="color: #3498db;">Privacy Policy</a> | 
+        <a href="/terms" style="color: #3498db;">Terms of Service</a>
+    </div>
+
+    <script>
+        async function shortenUrl() {
+            const url = document.getElementById('longUrl').value;
+            if (!url) return alert("Please enter a valid URL");
+
+            try {
+                const res = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await res.json();
+
+                if (data.shortUrl) {
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('result-content').innerHTML = `
+                        🐣 Your Nest Link is Ready!<br><br>
+                        <a href="${data.shortUrl}" target="_blank" style="color: #e74c3c; text-decoration: underline; font-weight: bold;">
+                            ${data.shortUrl}
+                        </a>
+                        <div class="copy-btn" onclick="copyToClipboard('${data.shortUrl}')">
+                            📋 COPY NEST LINK
+                        </div>
+                        <p style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
+                            Share this link — it’s short, sweet, and safe!
+                        </p>
+                    `;
+                } else {
+                    alert("Error: " + (data.error || "Something went wrong"));
+                }
+            } catch (err) {
+                alert("Network error. Please try again.");
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard! 🐣");
+            }).catch(() => {
+                alert("Failed to copy. Please select and copy manually.");
+            });
+        }
+    </script>
+</body>
+</html>
